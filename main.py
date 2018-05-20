@@ -7,6 +7,7 @@ import re
 LOG_NAME = 'log.txt'
 
 stat_1 = [0] * 24
+stat_2 = dict()
 stat_4 = dict()
 
 def str_to_date(string):
@@ -27,9 +28,28 @@ def get_country_name(s_ip):
 
 def get_user_agents(string):
     # s = string.split()
-    # print(s)
+    # print(string)
+    ret = list()
     for s in string.split('('):
-        print(s.split(')')[-1].split())
+        ret += (s.split(')')[-1].split())
+    return ret
+    # r = re.compile(r"[(?:\(([^)]*?)\))]*")
+    # s = re.match(r, string)
+    # if s:
+    #     print(s.groups())
+
+def get_os(string):
+    # s = string.split()
+    # print(string)
+    # ret = list()
+    # for s in string.split('('):
+    #     ret += (s.split(')')[-1].split())
+    # print(ret)
+    # return ret
+    r = re.compile(r"([^\)]*?)")
+    s = re.match(r, string)
+    if s:
+        print(s.groups())
     # r = re.compile(r"[(?:\(([^)]*?)\))]*")
     # s = re.match(r, string)
     # if s:
@@ -42,6 +62,17 @@ def main():
     for m in messages:
         s = re.match(r, m)
         if s:
+            # task 1
+            date = str_to_date(s.group(2))
+            stat_1[date.hour] += 1
+            # task 2
+            for i in get_user_agents(s.group(8)):
+                if not i in stat_2:
+                    stat_2[i] = 0
+                else:
+                    stat_2[i] += 1
+            # get_os(s.group(8))
+            # task 4
             country = get_country_name(s.group(1))
             if not country:
                 print('BOT FOUND: ip=[{}]'.format(s.group(1)))
@@ -49,9 +80,6 @@ def main():
                 stat_4[country] = 0
             else:
                 stat_4[country] += 1
-            # print(country)
-            date = str_to_date(s.group(2))
-            stat_1[date.hour] += 1
             continue
             print(s.groups())
         else: 
@@ -66,8 +94,12 @@ if __name__ == "__main__":
     # print(s.groups())
     # s = '22/Feb/2018:09:03:22'
     # str_to_date(s)
-    # main()
-    # print(stat_1)
-    # print(stat_4)
-    s = "(Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/64.0.3282.167 Safari/537.36"
-    get_user_agents(s)
+    main()
+    print('TASK 1')
+    print(stat_1)
+    print('TASK 2')
+    print(stat_2)
+    print('TASK 4')
+    print(stat_4)
+    # s = "Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/64.0.3282.167 Safari/537.36"
+    # get_os(s)
